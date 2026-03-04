@@ -1,0 +1,11 @@
+name = "yahoo-feed-quick-view"
+main = "src/index.ts"
+compatibility_date = "2025-06-02"
+
+[observability]
+enabled = true
+
+# KV namespace for tracking "first seen" times
+[[kv_namespaces]]
+binding = "FEED_KV"
+id = "7eead5ccf8ec4254b60869f9203a63e8"
