@@ -530,9 +530,33 @@ function renderPage(): string {
 </html>`;
 }
 
+// Basic auth check - returns 401 if invalid
+function checkAuth(request: Request): Response | null {
+  const auth = request.headers.get("Authorization");
+  if (!auth || !auth.startsWith("Basic ")) {
+    return new Response("Unauthorized", {
+      status: 401,
+      headers: { "WWW-Authenticate": 'Basic realm="Feed Viewer"' },
+    });
+  }
+  const decoded = atob(auth.slice(6));
+  const [user, pass] = decoded.split(":");
+  if (user !== "dog" || pass !== "dog") {
+    return new Response("Unauthorized", {
+      status: 401,
+      headers: { "WWW-Authenticate": 'Basic realm="Feed Viewer"' },
+    });
+  }
+  return null; // auth OK
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    // Check basic auth on every request
+    const authFail = checkAuth(request);
+    if (authFail) return authFail;
 
     try {
       // New combined endpoint
